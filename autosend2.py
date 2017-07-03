@@ -55,7 +55,6 @@ def st(log,pas):
                     users.index(userid)
                 except:
                     vk_api.messages.send(user_id=userid, message='Если хочешь такой же автоответчик, отправь "/start логин пароль"')
-        time.sleep(2)
 raw_input("Чтобы начать нажмите 'Enter'")
 t = threading.Thread(target=kolvo)
 threads.append(t)
