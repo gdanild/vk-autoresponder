@@ -11,6 +11,7 @@ useusers = []
 messagetext0 = ["Привет! Я отвечу в ближашее время!", "Здраствуй. Я отвчу позже,когда зайду в ВК","Приветствую! Это автоответчик. Отвечу позже!"]
 messagetext1 = ["Если хочешь такой же автоответчик, отправь", "Хочешь такой же автоответчик ? Отправь", "Нужен автоответчик ? Отправь"]
 messagetext2 = ["У пользователя твой пароль удалится!", "У собеседника пароль не высветится", "Твой пароль собеседник не увидит"]
+messagetexterror = ["Неправильный лоигн или пароль", "Ошибка! Неверные данные.","Не удалось авторизоваться. Проверьте данные."]
 last_time = 0
 def kolvo():
     while True:
@@ -33,11 +34,8 @@ def st(log,pas):
         resp = vk_api.messages.get(out="0", count = "1")[1]
         userid = int(resp["uid"])
         if resp["read_state"] == 0 and resp.keys()[6] != "users_count":
-            
-            print "@@@@@@@ message @@@@@@@@@"
             result = re.findall("/start .+ .+", resp["body"])
             if len(result) == 1:
-                print resp
                 vk_api.messages.delete(message_ids = resp["mid"], spam = "0")
                 log = re.findall(" (.+) ", resp["body"])[0]
                 pas = re.findall(" .+ (.+)", resp["body"])[0]
@@ -49,22 +47,21 @@ def st(log,pas):
                     vk_api2 = vk.API(session)
                     api2 = vk.API(session)
                 except:
-                    vk_api.messages.send(user_id=userid, message="Неправильный лоигн или пароль")
-                    print ("error Login or Password is not avalible")
+                    times = random.randint(0,2)
+                    vk_api.messages.send(user_id=userid, message=messagetexterror[times])
+                    print ("login or password is not avalible")
                 else:
                     t = threading.Thread(target=st, args = (log, pas))
                     threads.append(t)
                     t.start()
                     vk_api.messages.send(user_id=userid, message="Готово")
-                    print ("new threads")
+                    print ("New user is Active")
                     
             else:
-                print str(userid in useusers)
                 if str(userid in useusers) == "False":
                     last_time =time.time()
-                    print "Отвечно"
                     useusers.append(userid)
-                    print resp["body"]
+                    print 'For message: "' + resp["body"] + '" have answer'
                     times = random.randint(0,2)
                     vk_api.messages.send(user_id=userid, message=messagetext0[times])
                     try:
@@ -76,7 +73,7 @@ def st(log,pas):
             if time.time()-last_time > 2700:
                 useusers.remove(userid)
                 vk_api.messages.markAsRead(message_ids = resp["mid"])
-                print "удален пользователь из юзе юрс"
+                print "For user " + userid + " 45 minutes have passed"
                     
         time.sleep(2)
 raw_input("For start please 'Enter'")
